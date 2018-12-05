@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
                     //Menampilkan toast berhasil
                     Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
 
-                    Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                    Intent myIntent = new Intent(LoginActivity.this, BrowseActivity.class);
 
                     //Menyimpan nama dan email dari user yang telah login
                     myIntent.putExtra("nama", users.getUsers().get(index).getNama());
