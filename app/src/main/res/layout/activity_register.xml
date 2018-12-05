@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingLeft="32dp"
+    android:paddingRight="32dp"
+    tools:context=".RegisterActivity">
+
+    <EditText
+        android:id="@+id/register_username_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Username"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/register_nama_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nama"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/register_email_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/register_password_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/register_register_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="REGISTER" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Already have an account ? "
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/register_login_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Login"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+    </LinearLayout>
+
+</LinearLayout>
