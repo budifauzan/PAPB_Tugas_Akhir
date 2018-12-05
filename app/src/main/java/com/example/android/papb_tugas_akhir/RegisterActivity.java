@@ -3,20 +3,37 @@ package com.example.android.papb_tugas_akhir;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.Map;
+
 public class RegisterActivity extends AppCompatActivity {
-    //Inisialisasi class users yang menyimpan data-data para user
-    users users = new users();
+
+    private static DatabaseReference mDatabase;
+    private static boolean result = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         //Deklarasi Button register
         Button register = findViewById(R.id.register_register_button);
@@ -25,48 +42,38 @@ public class RegisterActivity extends AppCompatActivity {
         TextView login = findViewById(R.id.register_login_text_view);
 
         //Deklarasi EditText username
-        final EditText username = findViewById(R.id.register_username_edit_text);
-
-        //Deklarasi EditText nama
-        final EditText nama = findViewById(R.id.register_nama_edit_text);
-
-        //Deklarasi EditText email
-        final EditText email = findViewById(R.id.register_email_edit_text);
+        final EditText usernameEdit = findViewById(R.id.register_username_edit_text);
 
         //Deklarasi EditText password
-        final EditText password = findViewById(R.id.register_password_edit_text);
+        final EditText passwordEdit = findViewById(R.id.register_password_edit_text);
+
+        //Deklarasi EditText email
+        final EditText emailEdit = findViewById(R.id.register_email_edit_text);
+
+        //Deklarasi EditText nama
+        final EditText namaEdit = findViewById(R.id.register_nama_edit_text);
 
         //Fungsi klik tombol register
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Deklarasi variabel valid untuk menentukan berhasil tidaknya proses register
-                boolean valid = true;
-
-                for (int i = 0; i < users.getUsers().size(); i++) {
-                    //Apabila username sudah ada di data user, maka valid == false
-                    if (username.getText().toString().equalsIgnoreCase(users.getUsers().get(i).getUsername())) {
-                        valid = false;
-                        break;
-                    }
-                }
+                valid();
                 //Jika valid
-                if (valid) {
-                    // maka menyimpan data yang telah diinput ke dalam data user
-                    users.getUsers().add(new user(username.getText().toString(), password.getText().toString(), email
-                            .getText().toString(), nama.getText().toString()));
-                    //Lalu menampilkan toast berhasil
-                    Toast.makeText(RegisterActivity.this, "Register berhasil", Toast.LENGTH_SHORT).show();
+                if (result) {
+                    //Menambahkan data user ke firebase
+                    createNewUser(usernameEdit.getText().toString(), passwordEdit.getText().toString(),
+                            emailEdit.getText().toString(), namaEdit.getText().toString());
 
-                    //Kemudian menuju ke activity login
+                    //Menampilkan toast berhasil
+                    Toast.makeText(RegisterActivity.this, "Register Berhasil", Toast.LENGTH_SHORT).show();
+
+                    //Menuju ke activity login
                     Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
                     RegisterActivity.this.startActivity(myIntent);
                 } else {
                     //Jika tidak valid, maka menampilkan toast gagal
-                    Toast.makeText(RegisterActivity.this, "Username sudah dipakai mamang",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, "Register Gagal", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
 
@@ -78,5 +85,114 @@ public class RegisterActivity extends AppCompatActivity {
                 RegisterActivity.this.startActivity(myIntent);
             }
         });
+
+    }
+
+    /**
+     * @param username dari field username
+     * @param password dari field password
+     * @param email    dari field email
+     * @param nama     dari field nama
+     */
+    private static void createNewUser(String username, String password, String email, String nama) {
+        //Memnginisialisasi object user
+        User user = new User(username, password, email, nama);
+
+        //Menyimpan data user kedalam HashMap
+        Map<String, Object> userDetail = user.detailToMap();
+
+        //Menginisalisasi HashMap
+        Map<String, Object> childUpdates = new HashMap<>();
+
+        //Menambakan data user ke child usernameList
+        childUpdates.put("user/usernameList/" + username, userDetail);
+
+        //Menambakan data user ke child usernameKey
+        mDatabase.child("user").child("usernameKey").child(username).setValue(true);
+
+        //Mengupdate child dari database
+        mDatabase.updateChildren(childUpdates);
+    }
+
+    /**
+     * Method untuk validasi form
+     *
+     * @return valid atau tidaknya register
+     */
+    private void valid() {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        //Deklarasi EditText username
+        final EditText usernameEdit = findViewById(R.id.register_username_edit_text);
+
+        //Deklarasi EditText password
+        EditText passwordEdit = findViewById(R.id.register_password_edit_text);
+
+        //Deklarasi EditText email
+        EditText emailEdit = findViewById(R.id.register_email_edit_text);
+
+        //Deklarasi EditText nama
+        EditText namaEdit = findViewById(R.id.register_nama_edit_text);
+
+        //Deklarasi EditText confirm password
+        EditText confirmPasswordEdit = findViewById(R.id.register_confirm_password_edit_text);
+
+        //Untuk mengecek apakah username sudah digunakan atau belum
+        ValueEventListener valueEventListener = mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("user").child("usernameKey").hasChild(usernameEdit.getText().toString())) {
+                    result = false;
+                    usernameEdit.setError("Username already used");
+                } else {
+                    result = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
+
+        //Jika username kosong, menampilkan notif error
+        if (TextUtils.isEmpty(usernameEdit.getText().toString())) {
+            usernameEdit.setError("Required");
+            result = false;
+        } else {
+            usernameEdit.setError(null);
+        }
+
+        //Jika password kosong, menampilkan notif error
+        if (TextUtils.isEmpty(passwordEdit.getText().toString())) {
+            passwordEdit.setError("Required");
+            result = false;
+        } else {
+            passwordEdit.setError(null);
+        }
+
+        //Jika email kosong, menampilkan notif error
+        if (TextUtils.isEmpty(emailEdit.getText().toString())) {
+            emailEdit.setError("Required");
+            result = false;
+        } else {
+            emailEdit.setError(null);
+        }
+
+        //Jika nama kosong, menampilkan notif error
+        if (TextUtils.isEmpty(namaEdit.getText().toString())) {
+            namaEdit.setError("Required");
+            result = false;
+        } else {
+            namaEdit.setError(null);
+        }
+
+        //Jika kolom password dan confirm password tidak cocok, menampilkan notif error
+        if (!confirmPasswordEdit.getText().toString().equals(passwordEdit.getText().toString())) {
+            confirmPasswordEdit.setError("Password isn't match");
+            result = false;
+        } else {
+            confirmPasswordEdit.setError(null);
+        }
+
     }
 }

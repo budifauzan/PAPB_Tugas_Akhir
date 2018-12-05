@@ -9,11 +9,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseApp;
+
 public class LoginActivity extends AppCompatActivity {
-    //Inisialisasi class users yang menyimpan data-data para user
+    //Inisialisasi class users yang menyimpan data-data para User
     users users = new users();
 
-    //Deklarasi variabel index untuk menyimpan index dari data user
+    //Deklarasi variabel index untuk menyimpan index dari data User
     int index;
 
     @Override
@@ -41,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
                 boolean valid = false;
 
                 for (int i = 0; i < users.getUsers().size(); i++) {
-                    /*Apabila username dan password yang diinput cocok dengan yang ada di data user
+                    /*Apabila username dan password yang diinput cocok dengan yang ada di data User
                     maka valid akan bernilai true dan index akan bernilai i*/
                     if (username.getText().toString().equals(users.getUsers().get(i).getUsername()) &&
                             password.getText().toString().equals(users.getUsers().get(i).getPassword())) {
@@ -57,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
 
-                    //Menyimpan nama dan email dari user yang telah login
+                    //Menyimpan nama dan email dari User yang telah login
                     myIntent.putExtra("nama", users.getUsers().get(index).getNama());
                     myIntent.putExtra("email", users.getUsers().get(index).getEmail());
 
