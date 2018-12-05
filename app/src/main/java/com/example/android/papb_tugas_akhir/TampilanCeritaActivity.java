@@ -1,7 +1,9 @@
 package com.example.android.papb_tugas_akhir;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -26,6 +28,17 @@ public class TampilanCeritaActivity extends AppCompatActivity {
 
         title.setText(getIntent().getStringExtra("title"));
         content.setText(getIntent().getStringExtra("content"));
+
+        db=FirebaseDatabase.getInstance();
+        bookmark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                db.getReference("bookmark").child("idUSer").child(getIntent().getStringExtra("id")).setValue("");
+                Intent intent = new Intent(TampilanCeritaActivity.this, BookmarkActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
 
     }

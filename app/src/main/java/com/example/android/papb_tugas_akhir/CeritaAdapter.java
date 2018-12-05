@@ -48,6 +48,7 @@ public class CeritaAdapter extends RecyclerView.Adapter<CeritaAdapter.ViewHolder
                 Intent intent = new Intent(view.getContext(), TampilanCeritaActivity.class);
                 intent.putExtra("title", list.getTitle());
                 intent.putExtra("content", list.getOverview());
+                intent.putExtra("id",list.getId());
                 view.getContext().startActivity(intent);
                 Log.d("click", "onClick: clicked");
             }
