@@ -1,7 +1,9 @@
 package com.example.android.papb_tugas_akhir;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by Alex on 12/5/2018.
  */
@@ -18,6 +22,7 @@ import java.util.List;
 public class CeritaAdapter extends RecyclerView.Adapter<CeritaAdapter.ViewHolder> {
     List<ListCerita> listCerita;
     private Context context;
+    private OnItemClicked mListener;
 
     public CeritaAdapter(List<ListCerita> listCerita, Context context) {
         this.listCerita = listCerita;
@@ -40,7 +45,11 @@ public class CeritaAdapter extends RecyclerView.Adapter<CeritaAdapter.ViewHolder
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "clicked "+list.getTitle(),Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(view.getContext(), TampilanCeritaActivity.class);
+                intent.putExtra("title", list.getTitle());
+                intent.putExtra("content", list.getOverview());
+                view.getContext().startActivity(intent);
+                Log.d("click", "onClick: clicked");
             }
         });
 
@@ -62,6 +71,9 @@ public class CeritaAdapter extends RecyclerView.Adapter<CeritaAdapter.ViewHolder
             overview= (TextView) itemView.findViewById(R.id.overview);
             linearLayout=(LinearLayout) itemView.findViewById(R.id.linearLayout);
         }
+    }
+    public interface OnItemClicked {
+        void onItemClick(int position);
     }
 
 }
