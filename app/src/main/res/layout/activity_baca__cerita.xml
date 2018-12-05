@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Baca_Cerita"
+
+    >
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:id="@+id/activity_baca_app_bar"
+        >
+
+    </android.support.design.widget.AppBarLayout>
+
+   <TextView
+       android:layout_below="@id/activity_baca_app_bar"
+       android:id="@+id/baca_carita_judul"
+       android:text="Baca"
+       android:padding="10dp"
+       android:gravity="center"
+       android:layout_height="wrap_content"
+       android:layout_width="match_parent" />
+
+    <ScrollView
+        android:layout_below="@id/baca_carita_judul"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/baca_cerita_konten"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="Lorem IPSUM"
+            android:layout_marginBottom="10dp"
+
+            />
+    </ScrollView>
+
+
+</RelativeLayout>
