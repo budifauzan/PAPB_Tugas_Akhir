@@ -19,22 +19,6 @@ public class User {
         this.nama = nama;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getNama() {
-        return nama;
-    }
-
     @Exclude
     public Map<String, Object> detailToMap() {
         HashMap<String, Object> result = new HashMap<>();

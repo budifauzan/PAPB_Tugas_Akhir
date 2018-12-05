@@ -23,7 +23,7 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity {
 
     private static DatabaseReference mDatabase;
-    private static boolean result = true;
+    private static boolean result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,28 +54,24 @@ public class RegisterActivity extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                result = true;
                 valid();
-                //Jika valid
                 if (result) {
                     //Menambahkan data user ke firebase
                     createNewUser(usernameEdit.getText().toString(), passwordEdit.getText().toString(),
                             emailEdit.getText().toString(), namaEdit.getText().toString());
-
-                    //Menampilkan toast berhasil
-                    Toast.makeText(RegisterActivity.this, "Register Berhasil", Toast.LENGTH_SHORT).show();
-
                     //Menuju ke activity login
                     Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
                     RegisterActivity.this.startActivity(myIntent);
-                } else {
-                    //Jika tidak valid, maka menampilkan toast gagal
-                    Toast.makeText(RegisterActivity.this, "Register Gagal", Toast.LENGTH_SHORT).show();
                 }
+
             }
         });
 
         //Apabila tulisan login diklik maka akan menuju ke halaman login
-        login.setOnClickListener(new View.OnClickListener() {
+        login.setOnClickListener(new View.OnClickListener()
+
+        {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
@@ -111,11 +107,38 @@ public class RegisterActivity extends AppCompatActivity {
         mDatabase.updateChildren(childUpdates);
     }
 
+//    private void checkUsername() {
+//        final EditText usernameEdit = findViewById(R.id.register_username_edit_text);
+//
+//        //Jika username kosong, menampilkan notif error
+//        if (TextUtils.isEmpty(usernameEdit.getText().toString())) {
+//            usernameEdit.setError("Required");
+//            result = false;
+//        } else {
+//            usernameEdit.setError(null);
+//            //Untuk mengecek apakah username sudah digunakan atau belum
+//            mDatabase.addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    if (dataSnapshot.child("user").child("usernameKey").child(usernameEdit.getText().toString()).getValue(boolean.class) != null) {
+//                        usernameEdit.setError("Username already used");
+//                        RegisterActivity.this.result = false;
+//                    } else {
+//                        valid();
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError error) {
+//
+//                }
+//            });
+//        }
+
+//    }
+
     //Method untuk validasi form
     private void valid() {
-        //Deklarasi EditText username
-        final EditText usernameEdit = findViewById(R.id.register_username_edit_text);
-
         //Deklarasi EditText password
         EditText passwordEdit = findViewById(R.id.register_password_edit_text);
 
@@ -128,23 +151,8 @@ public class RegisterActivity extends AppCompatActivity {
         //Deklarasi EditText confirm password
         EditText confirmPasswordEdit = findViewById(R.id.register_confirm_password_edit_text);
 
-        //Untuk mengecek apakah username sudah digunakan atau belum
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.child("user").child("usernameKey").hasChild(usernameEdit.getText().toString())) {
-                    result = false;
-                    usernameEdit.setError("Username already used");
-                } else {
-                    result = true;
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-
-            }
-        });
+        //Deklarasi EditText username
+        EditText usernameEdit = findViewById(R.id.register_username_edit_text);
 
         //Jika username kosong, menampilkan notif error
         if (TextUtils.isEmpty(usernameEdit.getText().toString())) {
