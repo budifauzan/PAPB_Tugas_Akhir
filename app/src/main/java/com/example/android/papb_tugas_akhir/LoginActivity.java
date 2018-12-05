@@ -1,6 +1,7 @@
 package com.example.android.papb_tugas_akhir;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,19 +11,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
-    //Inisialisasi class users yang menyimpan data-data para User
-    users users = new users();
-
-    //Deklarasi variabel index untuk menyimpan index dari data User
-    int index;
+    public static String usernameGlobal;
+    private static DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         //Deklarasi TextView register
         TextView register = findViewById(R.id.login_sign_up_text_view);
 
@@ -30,46 +34,42 @@ public class LoginActivity extends AppCompatActivity {
         Button login = findViewById(R.id.login_login_button);
 
         //Deklarasi EditText username
-        final EditText username = findViewById(R.id.login_username_edit_text);
+        final EditText usernameEdit = findViewById(R.id.login_username_edit_text);
 
         //Deklarasi EditText password
-        final EditText password = findViewById(R.id.login_password_edit_text);
+        final EditText passwordEdit = findViewById(R.id.login_password_edit_text);
 
         //Fungsi klik tombol login
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Deklarasi variabel valid untuk mengecek behasil tidaknya proses login
-                boolean valid = false;
-
-                for (int i = 0; i < users.getUsers().size(); i++) {
-                    /*Apabila username dan password yang diinput cocok dengan yang ada di data User
-                    maka valid akan bernilai true dan index akan bernilai i*/
-                    if (username.getText().toString().equals(users.getUsers().get(i).getUsername()) &&
-                            password.getText().toString().equals(users.getUsers().get(i).getPassword())) {
-                        valid = true;
-                        index = i;
-                        break;
+                final String username = usernameEdit.getText().toString();
+                final String password = passwordEdit.getText().toString();
+                mDatabase.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            if (dataSnapshot.child("user").child("usernameList").hasChild(username) &&
+                                    password.equals(dataSnapshot.child("user").child("usernameList").child(username).child("password").getValue(String.class))) {
+                                Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
+                                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                                myIntent.putExtra("nama", dataSnapshot.child("user").child("usernameList").child(username).child("nama").getValue(String.class));
+                                myIntent.putExtra("email", dataSnapshot.child("user").child("usernameList").child(username).child("email").getValue(String.class));
+                                LoginActivity.this.startActivity(myIntent);
+                                usernameGlobal = username;
+                                break;
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Login Gagal", Toast.LENGTH_SHORT).show();
+                                break;
+                            }
+                        }
                     }
-                }
-                //Jika valid
-                if (valid) {
-                    //Menampilkan toast berhasil
-                    Toast.makeText(LoginActivity.this, "Login Berhasil", Toast.LENGTH_SHORT).show();
 
-                    Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                    @Override
+                    public void onCancelled(DatabaseError error) {
 
-                    //Menyimpan nama dan email dari User yang telah login
-                    myIntent.putExtra("nama", users.getUsers().get(index).getNama());
-                    myIntent.putExtra("email", users.getUsers().get(index).getEmail());
-
-                    //Kemudian menuju ke activity main
-                    LoginActivity.this.startActivity(myIntent);
-
-                } else {
-                    //Jika tidak valid maka menampilkan toast gagal
-                    Toast.makeText(LoginActivity.this, "Login Gagal", Toast.LENGTH_SHORT).show();
-                }
+                    }
+                });
             }
         });
 

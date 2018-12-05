@@ -1,13 +1,11 @@
 package com.example.android.papb_tugas_akhir;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -19,7 +17,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -114,13 +111,8 @@ public class RegisterActivity extends AppCompatActivity {
         mDatabase.updateChildren(childUpdates);
     }
 
-    /**
-     * Method untuk validasi form
-     *
-     * @return valid atau tidaknya register
-     */
+    //Method untuk validasi form
     private void valid() {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
         //Deklarasi EditText username
         final EditText usernameEdit = findViewById(R.id.register_username_edit_text);
 
@@ -137,7 +129,7 @@ public class RegisterActivity extends AppCompatActivity {
         EditText confirmPasswordEdit = findViewById(R.id.register_confirm_password_edit_text);
 
         //Untuk mengecek apakah username sudah digunakan atau belum
-        ValueEventListener valueEventListener = mDatabase.addValueEventListener(new ValueEventListener() {
+        mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child("user").child("usernameKey").hasChild(usernameEdit.getText().toString())) {
