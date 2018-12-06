@@ -26,9 +26,8 @@
             android:label="Register" />
         <activity android:name=".BrowseActivity" />
         <activity android:name=".TampilanCeritaActivity" />
-        <activity android:name=".BookmarkActivity">
-
-        </activity>
+        <activity android:name=".BookmarkActivity"></activity>
+        <activity android:name=".TambahCeritaActivity"></activity>
     </application>
 
 </manifest>

@@ -18,6 +18,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/txt_title"/>
             <Button
+                android:text="Bookmark"
                 android:layout_width="70dp"
                 android:layout_height="50dp"
                 android:gravity="center"
