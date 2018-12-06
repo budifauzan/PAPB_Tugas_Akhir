@@ -67,6 +67,8 @@ public class LoginActivity extends AppCompatActivity {
                 } else {
                     //Jika tidak valid maka menampilkan toast gagal
                     Toast.makeText(LoginActivity.this, "Login Gagal", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(LoginActivity.this,Baca_Cerita.class);
+                    LoginActivity.this.startActivity(intent);
                 }
             }
         });
