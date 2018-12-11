@@ -24,9 +24,12 @@
         <activity
             android:name=".RegisterActivity"
             android:label="Register" />
-        <activity android:name=".BrowseActivity" />
-        <activity android:name=".TampilanCeritaActivity" />
-        <activity android:name=".BookmarkActivity"></activity>
+        <activity android:name=".BrowseActivity"
+            android:label="Browse"/>
+        <activity android:name=".TampilanCeritaActivity"
+            android:label="Story"/>
+        <activity android:name=".BookmarkActivity"
+            android:label="Bookmark"></activity>
         <activity android:name=".TambahCeritaActivity"></activity>
     </application>
 
