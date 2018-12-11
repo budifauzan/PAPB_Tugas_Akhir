@@ -35,12 +35,19 @@ public class BrowseActivity extends AppCompatActivity {
     private FirebaseDatabase db;
     private FloatingActionButton fab;
     private String idUser = "dummyIdUser";
+    private EditText txt_search;
+    private Button btn_search;
+    private String inputCari;
+    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference mRef = mDatabase.child("Story");
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse);
+        txt_search = (EditText) findViewById(R.id.txt_search);
+        btn_search = (Button) findViewById(R.id.btn_search);
         recyclerView = (RecyclerView) findViewById(R.id.recV_cerita);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -76,6 +83,57 @@ public class BrowseActivity extends AppCompatActivity {
 
             }
         });
+
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                inputCari=txt_search.getText().toString();
+                if (inputCari.isEmpty()){
+                    db = FirebaseDatabase.getInstance();
+                    db.getReference("Story").addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(final DataSnapshot dataSnapshot) {
+                            listCeritas.clear();
+                            for (DataSnapshot sn : dataSnapshot.getChildren()) {
+                                listCeritas.add( new ListCerita(sn.getKey().toString(),sn.child("Judul").getValue().toString(),sn.child("Kontex").getValue().toString()));
+                                Log.d("coba log", "onDataChange: "+sn.child("Judul").getValue().toString());
+                            }
+                            adapter = new CeritaAdapter(listCeritas, BrowseActivity.this);
+                            recyclerView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                } else {
+                    listCeritas.clear();
+                    mRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot sn : dataSnapshot.getChildren()){
+                                String sJudul = sn.child("Judul").getValue(String.class);
+                                if (sJudul.toLowerCase().contains(inputCari.toLowerCase())){
+                                    listCeritas.add( new ListCerita(sn.getKey().toString(),sn.child("Judul").getValue().toString(),sn.child("Kontex").getValue().toString()));
+                                }
+                            }
+                            adapter = new CeritaAdapter(listCeritas, BrowseActivity.this);
+                            recyclerView.setAdapter(adapter);
+                            adapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+            }
+        });
+
     }
 }
 
