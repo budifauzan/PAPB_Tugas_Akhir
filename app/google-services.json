@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "32493440900",
+    "firebase_url": "https://yukbaca-76ad8.firebaseio.com",
+    "project_id": "yukbaca-76ad8",
+    "storage_bucket": "yukbaca-76ad8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32493440900:android:21ac04aa0e36cc7c",
+        "android_client_info": {
+          "package_name": "com.example.android.papb_tugas_akhir"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "32493440900-uf855i2k0aeg4sc5ssc2kt79i9aoscug.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.android.papb_tugas_akhir",
+            "certificate_hash": "7e62b22075bf828ed15ddb3d4e3d10873d1d55b9"
+          }
+        },
+        {
+          "client_id": "32493440900-t74rk57j3bshttr2151mi6e4e2p87bbp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnrLgNat6pEJmClBQ3WBzv876t7PT4118"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "32493440900-t74rk57j3bshttr2151mi6e4e2p87bbp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
