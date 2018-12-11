@@ -31,9 +31,9 @@ public class Baca_Cerita extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(savedInstanceState.get("idStory")!=null){
-            storyId=(String) savedInstanceState.get("idStory");
-        }
+//        if(savedInstanceState.get("idStory")!=null){
+//            storyId=(String) savedInstanceState.get("idStory");
+//        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_baca__cerita);
