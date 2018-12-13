@@ -23,6 +23,7 @@ public class User {
     public Map<String, Object> detailToMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("password", password);
+        result.put("username", username);
         result.put("email", email);
         result.put("nama", nama);
         return result;

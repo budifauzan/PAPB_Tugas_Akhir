@@ -26,7 +26,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference("user");
         //Deklarasi TextView register
         TextView register = findViewById(R.id.login_sign_up_text_view);
 
@@ -44,30 +44,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 result = true;
-                valid();
+                login();
                 if (result) {
                     final String username = usernameEdit.getText().toString();
                     final String password = passwordEdit.getText().toString();
-                    mDatabase.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.child("user").child("usernameList").hasChild(username) &&
-                                    password.equals(dataSnapshot.child("user").child("usernameList").child(username).child("password").getValue(String.class))) {
-                                Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
-                                myIntent.putExtra("nama", dataSnapshot.child("user").child("usernameList").child(username).child("nama").getValue(String.class));
-                                myIntent.putExtra("email", dataSnapshot.child("user").child("usernameList").child(username).child("email").getValue(String.class));
-                                LoginActivity.this.startActivity(myIntent);
-                                globalUsername = username;
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Username atau password yang anda masukkan salah", Toast.LENGTH_SHORT).show();
-                            }
-                        }
 
-                        @Override
-                        public void onCancelled(DatabaseError error) {
-
-                        }
-                    });
                 }
 
             }
@@ -85,12 +66,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void valid() {
+    private void login() {
+        result = true;
         //Deklarasi EditText username
-        EditText usernameEdit = findViewById(R.id.login_username_edit_text);
+        final EditText usernameEdit = findViewById(R.id.login_username_edit_text);
 
         //Deklarasi EditText password
-        EditText passwordEdit = findViewById(R.id.login_password_edit_text);
+        final EditText passwordEdit = findViewById(R.id.login_password_edit_text);
 
         //Jika username kosong, menampilkan notif error
         if (TextUtils.isEmpty(usernameEdit.getText().toString())) {
@@ -107,9 +89,53 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             passwordEdit.setError(null);
         }
+        //Mengecek apakah username dan password yang dimasukkan sudah benar
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String key = "";
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    key = snapshot.getKey();
+                    //Jika username dan password yang dimasukkan benar
+                    if (usernameEdit.getText().toString().equals(dataSnapshot.child(key).child("username").getValue(String.class)) &&
+                            passwordEdit.getText().toString().equals(dataSnapshot.child(key).child("password").getValue(String.class))) {
+                        //Nilai result menjadi true
+                        result = true;
+                        break;
+                        //Jika tidak
+                    } else {
+                        //Nilai result menjadi false
+                        result = false;
+                    }
+                }
+                //Jika result true
+                if (result) {
+                    Intent myIntent = new Intent(LoginActivity.this, MainActivity.class);
+                    //Mengirim nama dari user
+                    myIntent.putExtra("nama", dataSnapshot.child(key).child("nama").getValue(String.class));
+                    //Mengirim email dari user
+                    myIntent.putExtra("email", dataSnapshot.child(key).child("email").getValue(String.class));
+                    //Menuju ke activity login
+                    LoginActivity.this.startActivity(myIntent);
+                    //Menyimpan username ke dalam variabel global
+                    globalUsername = usernameEdit.getText().toString();
+                    //Jika result false
+                } else {
+                    //Menampilkan notifikasi
+                    Toast.makeText(LoginActivity.this, "Username atau password yang anda masukkan salah", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
 
     }
-    private String getGlobalUsername(){
+
+    //Method untuk mengambil username
+    private String getGlobalUsername() {
         return globalUsername;
     }
 }

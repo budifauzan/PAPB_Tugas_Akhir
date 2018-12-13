@@ -1,7 +1,6 @@
 package com.example.android.papb_tugas_akhir;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -30,7 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference("user");
 
         //Deklarasi Button register
         Button register = findViewById(R.id.register_register_button);
@@ -54,17 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                result = true;
-                valid();
-                if (result) {
-                    //Menambahkan data user ke firebase
-                    createNewUser(usernameEdit.getText().toString(), passwordEdit.getText().toString(),
-                            emailEdit.getText().toString(), namaEdit.getText().toString());
-                    //Menuju ke activity login
-                    Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
-                    RegisterActivity.this.startActivity(myIntent);
-                }
-
+                register();
             }
         });
 
@@ -91,68 +80,41 @@ public class RegisterActivity extends AppCompatActivity {
         //Memnginisialisasi object user
         User user = new User(username, password, email, nama);
 
+        //Mendeklarasi variabel key
+        String key = mDatabase.push().getKey();
+
         //Menyimpan data user kedalam HashMap
         Map<String, Object> userDetail = user.detailToMap();
 
         //Menginisalisasi HashMap
         Map<String, Object> childUpdates = new HashMap<>();
 
-        //Menambakan data user ke child usernameList
-        childUpdates.put("user/usernameList/" + username, userDetail);
+        //Menambakan data user
+        childUpdates.put(key, userDetail);
 
-        //Menambakan data user ke child usernameKey
-        mDatabase.child("user").child("usernameKey").child(username).setValue(true);
 
         //Mengupdate child dari database
         mDatabase.updateChildren(childUpdates);
     }
 
-//    private void checkUsername() {
-//        final EditText usernameEdit = findViewById(R.id.register_username_edit_text);
-//
-//        //Jika username kosong, menampilkan notif error
-//        if (TextUtils.isEmpty(usernameEdit.getText().toString())) {
-//            usernameEdit.setError("Required");
-//            result = false;
-//        } else {
-//            usernameEdit.setError(null);
-//            //Untuk mengecek apakah username sudah digunakan atau belum
-//            mDatabase.addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    if (dataSnapshot.child("user").child("usernameKey").child(usernameEdit.getText().toString()).getValue(boolean.class) != null) {
-//                        usernameEdit.setError("Username already used");
-//                        RegisterActivity.this.result = false;
-//                    } else {
-//                        valid();
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(DatabaseError error) {
-//
-//                }
-//            });
-//        }
-
-//    }
 
     //Method untuk validasi form
-    private void valid() {
+    private void register() {
+        result = true;
         //Deklarasi EditText password
-        EditText passwordEdit = findViewById(R.id.register_password_edit_text);
+        final EditText passwordEdit = findViewById(R.id.register_password_edit_text);
 
         //Deklarasi EditText email
-        EditText emailEdit = findViewById(R.id.register_email_edit_text);
+        final EditText emailEdit = findViewById(R.id.register_email_edit_text);
 
         //Deklarasi EditText nama
-        EditText namaEdit = findViewById(R.id.register_nama_edit_text);
+        final EditText namaEdit = findViewById(R.id.register_nama_edit_text);
 
         //Deklarasi EditText confirm password
-        EditText confirmPasswordEdit = findViewById(R.id.register_confirm_password_edit_text);
+        final EditText confirmPasswordEdit = findViewById(R.id.register_confirm_password_edit_text);
 
         //Deklarasi EditText username
-        EditText usernameEdit = findViewById(R.id.register_username_edit_text);
+        final EditText usernameEdit = findViewById(R.id.register_username_edit_text);
 
         //Jika username kosong, menampilkan notif error
         if (TextUtils.isEmpty(usernameEdit.getText().toString())) {
@@ -160,6 +122,36 @@ public class RegisterActivity extends AppCompatActivity {
             result = false;
         } else {
             usernameEdit.setError(null);
+            //Mengecek apakah username sudah ada di firebase atau belum
+            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String key = snapshot.getKey();
+                        //Jika sudah ada maka menampilkan error pada editText
+                        if (dataSnapshot.child(key).child("username").getValue(String.class).equalsIgnoreCase(usernameEdit.getText().toString())) {
+                            usernameEdit.setError("Username already used");
+                            result = false;
+                        }
+                    }
+                    //Jika tidak ada
+                    if (result) {
+                        //Menambahkan data user ke firebase
+                        createNewUser(usernameEdit.getText().toString(), passwordEdit.getText().toString(),
+                                emailEdit.getText().toString(), namaEdit.getText().toString());
+                        //Menampilkan notif register berhasil
+                        Toast.makeText(RegisterActivity.this, "Register Berhasil", Toast.LENGTH_SHORT).show();
+                        //Menuju ke activity login
+                        Intent myIntent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        RegisterActivity.this.startActivity(myIntent);
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+
+                }
+            });
         }
 
         //Jika password kosong, menampilkan notif error
